@@ -6,8 +6,11 @@ function auth(req, res, next) {
   if (!token) return res.status(401).json({ msg: 'No token, authorization denied' });
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Decode token
-    req.user = decoded.id; // Attach user ID to request
+    
+    const cleanToken = token.startsWith('Bearer ') ? token.slice(7) : token;
+    
+    const decoded = jwt.verify(cleanToken, process.env.JWT_SECRET);
+    req.user = decoded.userId; 
     next();
   } catch (err) {
     res.status(400).json({ msg: 'Invalid token' });
